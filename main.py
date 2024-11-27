@@ -6,20 +6,21 @@ from openai import OpenAI
 
 # openai.api_key = os.environ.get("OPENAI_API_KEY")
 
+
 st.header("WhatsApp Chat Summarizer")
 [c1, c2] = st.columns([1, 1])
 with c1:
     st.image("./logo.jpeg")
 button = None
+
 with c2:
     file = st.file_uploader(
         "Upload a file", type=["zip", "txt"], accept_multiple_files=False
     )
     checkpoint = st.text_input("Enter checkpoint text")
-    openai = OpenAI(
-        # api_key=os.environ.get("OPENAI_API_KEY")
-    )
+    api_key = st.text_input("OpenAI API Key (Optional)")
     button = st.button("Process")
+openai = OpenAI(api_key=api_key if len(api_key) else st.secrets.get("OPENAI_API_KEY"))
 if button and file is not None:
     if file.type == "application/zip":
         with zipfile.ZipFile(file) as z:
