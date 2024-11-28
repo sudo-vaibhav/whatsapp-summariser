@@ -12,7 +12,8 @@ with c2:
     file = st.file_uploader(
         "Upload a file", type=["zip", "txt"], accept_multiple_files=False
     )
-    checkpoint = st.text_input("Enter checkpoint text")
+    checkpoint = st.text_input("Enter chat begin text")
+    checkpoint_end = st.text_input("Enter chat end text")
     api_key = st.text_input("OpenAI API Key (Optional)")
     button = st.button("Process")
 openai = OpenAI(api_key=api_key if len(api_key)
@@ -36,6 +37,13 @@ if button and file is not None:
         index = content.lower().find(checkpoint.lower())
         if index != -1:
             chat_context = content[index:]
+            if checkpoint_end:
+                index_end = chat_context.lower().find(checkpoint_end.lower())
+                if index_end != -1:
+                    chat_context = chat_context[:index_end]
+                else:
+                    st.error("Checkpoint end text not found in the file.")
+                    st.stop()
         else:
             st.error("Checkpoint text not found in the file.")
             st.stop()
